@@ -1,0 +1,3 @@
+C:/Users/super/c/c++/1.0/build/CMakeFiles/goofy-ahh-calculator.dir
+C:/Users/super/c/c++/1.0/build/CMakeFiles/edit_cache.dir
+C:/Users/super/c/c++/1.0/build/CMakeFiles/rebuild_cache.dir

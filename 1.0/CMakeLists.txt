@@ -32,7 +32,7 @@ target_include_directories(
     goofy-ahh-calculator
 
     PRIVATE dependencies
-    C:/Users/super/c/c++/.public-include
+    ${CMAKE_SOURCE_DIR}/../.public-include
 )
 
 target_link_libraries(

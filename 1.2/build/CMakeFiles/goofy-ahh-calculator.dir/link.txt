@@ -1,0 +1,3 @@
+"C:\Program Files\CMake\bin\cmake.exe" -E rm -f CMakeFiles\goofy-ahh-calculator.dir/objects.a
+C:\mingw64\bin\ar.exe qc CMakeFiles\goofy-ahh-calculator.dir/objects.a @CMakeFiles\goofy-ahh-calculator.dir\objects1.rsp
+C:\mingw64\bin\g++.exe -g -Wl,--whole-archive CMakeFiles\goofy-ahh-calculator.dir/objects.a -Wl,--no-whole-archive -o goofy-ahh-calculator.exe -Wl,--out-implib,libgoofy-ahh-calculator.dll.a -Wl,--major-image-version,0,--minor-image-version,0 @CMakeFiles\goofy-ahh-calculator.dir\linkLibs.rsp

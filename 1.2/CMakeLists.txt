@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.5.0)
-project(goofy-ahh-calculator VERSION 1.1.0)
+project(goofy-ahh-calculator VERSION 1.2.0)
 
 find_package(OpenGL REQUIRED)
 

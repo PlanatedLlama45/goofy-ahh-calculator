@@ -493,6 +493,7 @@ int main(int argc, cstr *argv) {
 
     addButtonScreen(1, Inv, normalBtnMidFont, "inv", -20.0f, -15.0f,    120.0f,  120.0f);
     addButtonScreen(1, Pi,  normalBtnMidFont, "pi",  -12.5f, -15.0f,    40.0f,  120.0f);
+    addButtonScreen(1, Eul, normalBtn,        "e",   -15.0f, -15.0f,    120.0f, -80.0f);
 
     addButtonScreen(1, Sqrt, smallBtn,  "sqrt",  -25.0f, -10.0f,   -120.0f, -20.0f);
     addButtonScreen(1, Cbrt, smallBtn,  "cbrt",  -25.0f, -10.0f,   -40.0f,  -20.0f);
@@ -588,6 +589,7 @@ int main(int argc, cstr *argv) {
 
         // Screen 1
         onBtnClick(Pi, doConstant, cd, M_PI, "pi");
+        onBtnClick(Eul, doConstant, cd, M_E, "e");
 
         onBtnClick(Sqrt, doFunClick, cd, "sqrt", false);
         onBtnClick(Cbrt, doFunClick, cd, "cbrt", false);

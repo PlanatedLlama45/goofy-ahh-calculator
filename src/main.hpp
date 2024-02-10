@@ -71,9 +71,6 @@ inline bool isInteger(double num) { return num == (double)(int)num; }
 inline bool getNthBit(byte num, uint bit) { return (num >> bit) & 1; }
 inline byte setNthBit(byte num, uint bit, bool val) { return (num & ~(1 << bit)) | (val << bit); }
 
-inline double deg2rad(double deg) { return deg * M_PI / 180.0; }
-inline double rad2deg(double rad) { return rad * 180.0 / M_PI; }
-
 extern std::string dispNum(CalcData &cd, bool secondNum);
 extern void display(CalcData &cd);
 extern void doNumClick(CalcData &cd, int btn);

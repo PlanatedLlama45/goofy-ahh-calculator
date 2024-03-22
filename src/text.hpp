@@ -32,9 +32,12 @@ public:
     void setText(std::string str);
     std::string getText() const;
     void draw();
+    inline void setHidden(bool val) { hidden = val; }
+    inline void switchHidden() { hidden = !hidden; }
 
 private:
     std::string text;
+    bool hidden = false;
     uint shader, VAO, VBO, textColorLocation;
     Window &window;
     glm::vec3 color;

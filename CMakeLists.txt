@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.5.0)
-project(goofy-ahh-calculator VERSION 1.3.0)
+project(goofy-ahh-calculator VERSION 2.0.0)
 
 find_package(OpenGL REQUIRED)
 
@@ -19,6 +19,7 @@ target_include_directories (
 
     PRIVATE dependencies
     ${CMAKE_SOURCE_DIR}/../.public-include
+    ${CMAKE_SOURCE_DIR}/../math_parser/src
 )
 
 target_link_libraries (

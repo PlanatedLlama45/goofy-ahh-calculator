@@ -1,396 +1,5 @@
 #include "main.hpp"
 
-std::string dispNum(CalcData &cd, bool secondNum) {
-    std::stringstream disp;
-
-    if (secondNum) {
-        if (cd.con2 != "")
-            disp << cd.con2;
-        else
-            disp << cd.num2;
-    }
-    else {
-        if (cd.con1 != "")
-            disp << cd.con1;
-        else
-            disp << cd.num1;
-    }
-
-    return disp.str();
-}
-
-void display(CalcData &cd) {
-    if (!cd.secondInp && !cd.begunInp && cd.func == "") {
-        cd.txtRes.setText("");
-        return;
-    }
-
-    std::stringstream disp;
-
-    if (cd.func != "") {
-        disp << cd.func << '(';
-        if (cd.begunInp)
-            disp << dispNum(cd, false);
-        disp << ')';
-    }
-    else if (!cd.secondInp)
-        disp << dispNum(cd, false);
-    else if (!cd.begunInp)
-        disp << dispNum(cd, false) << cd.op;
-    else {
-        if (cd.num2 < 0.0)
-            disp << dispNum(cd, false) << cd.op << '(' << dispNum(cd, true) << ')';
-        else
-            disp << dispNum(cd, false) << cd.op << dispNum(cd, true);
-    }
-    
-    cd.txtRes.setText(disp.str());
-}
-
-void doNumClick(CalcData &cd, int btn) {
-    if (!cd.canInput)
-        return;
-    
-    if (cd.solved)
-        doClear(cd);
-    
-    cd.begunInp = true;
-    cd.lastInp = btn;
-
-    if (cd.secondInp) {
-        if (cd.num2 > maxNum - btn)
-            return;
-        
-        if (!cd.decimal) {
-            cd.num2 *= 10;
-            cd.num2 += btn;
-        }
-        else {
-            cd.num2 += btn * std::pow(10, -cd.exp);
-            cd.exp++;
-        }
-    }
-    else {
-        if (cd.num1 > maxNum - btn)
-            return;
-        
-        if (!cd.decimal) {
-            cd.num1 *= 10;
-            cd.num1 += btn;
-        }
-        else {
-            cd.num1 += btn * std::pow(10, -cd.exp);
-            cd.exp++;
-        }
-    }
-
-    display(cd);
-}
-
-void doOpClick(CalcData &cd, char btn) {
-    if (!cd.begunInp)
-        return;
-    else if (cd.secondInp && cd.func == "" || cd.func != "")
-        doSolve(cd);
-
-    cd.op = btn;
-    cd.begunInp = false;
-    cd.secondInp = true;
-    cd.solved = false;
-    cd.decimal = false;
-    cd.canInput = true;
-    display(cd);
-}
-
-void doClear(CalcData &cd) {
-    cd.num1 = 0.0;
-    cd.num2 = 0.0;
-    cd.op = ' ';
-    cd.func = "";
-    cd.con1 = "";
-    cd.con2 = "";
-    cd.begunInp = false;
-    cd.secondInp = false;
-    cd.solved = false;
-    cd.decimal = false;
-
-    display(cd);
-}
-
-void doSolve(CalcData &cd) {
-    if ((!cd.begunInp || !cd.secondInp) && cd.func == "" || (cd.func != "" && !cd.begunInp))
-        return;
-
-    if (cd.func == "")
-        switch (cd.op) {
-        case '+': cd.num1 = cd.num1 + cd.num2; break;
-        case '-': cd.num1 = cd.num1 - cd.num2; break;
-        case '*': cd.num1 = cd.num1 * cd.num2; break;
-        case '/': cd.num1 = cd.num1 / cd.num2; break;
-        case '^': cd.num1 = std::pow(cd.num1, cd.num2); break;
-        case '%': cd.num1 = std::fmod(cd.num1, cd.num2); break;
-        default: return;
-        }
-    else {
-        // Trig
-        if (cd.funIsTrig) {
-            if (cd.degrees && cd.func[0] != 'a')
-                cd.num1 = deg2rad(cd.num1);
-            
-            double out;
-            // Normal trig
-            if (cd.func == "sin")
-                out = std::sin(cd.num1);
-            else if (cd.func == "cos")
-                out = std::cos(cd.num1);
-            else if (cd.func == "tan")
-                out = std::tan(cd.num1);
-            else if (cd.func == "cot")
-                out = 1.0 / std::tan(cd.num1);
-
-            // Inversed trig
-            else if (cd.func == "asin")
-                out = std::asin(cd.num1);
-            else if (cd.func == "acos")
-                out = std::acos(cd.num1);
-            else if (cd.func == "atan")
-                out = std::atan(cd.num1);
-            else if (cd.func == "acot")
-                out = std::atan(1.0 / cd.num1);
-
-            // Hyperbolic trig
-            if (cd.func == "sinh")
-                out = std::sinh(cd.num1);
-            else if (cd.func == "cosh")
-                out = std::cosh(cd.num1);
-            else if (cd.func == "tanh")
-                out = std::tanh(cd.num1);
-            else if (cd.func == "coth")
-                out = 1.0 / std::tanh(cd.num1);
-
-            // Inversed hyperbolic trig
-            else if (cd.func == "asinh")
-                out = std::asinh(cd.num1);
-            else if (cd.func == "acosh")
-                out = std::acosh(cd.num1);
-            else if (cd.func == "atanh")
-                out = std::atanh(cd.num1);
-            else if (cd.func == "acoth")
-                out = std::atanh(1.0 / cd.num1);
-            
-            if (cd.degrees && cd.func[0] == 'a')
-                out = rad2deg(out);
-            
-            cd.num1 = out;
-        }
-        // Other functions
-        else {
-            if (cd.func == "sqrt")
-                cd.num1 = std::sqrt(cd.num1);
-            else if (cd.func == "cbrt")
-                cd.num1 = std::cbrt(cd.num1);
-            else if (cd.func == "lg")
-                cd.num1 = std::log10(cd.num1);
-            else if (cd.func == "ln")
-                cd.num1 = std::log(cd.num1);
-        }
-    }
-
-    cd.num2 = 0;
-    cd.op = ' ';
-    cd.func = "";
-    cd.con1 = "";
-    cd.con2 = "";
-    cd.begunInp = true;
-    cd.secondInp = false;
-    cd.solved = true;
-    cd.decimal = false;
-    cd.canInput = true;
-
-    display(cd);
-}
-
-void doSign(CalcData &cd) {
-    if (cd.secondInp)
-        cd.num2 *= -1;
-    else
-        cd.num1 *= -1;
-    
-    display(cd);
-}
-
-void doErase(CalcData &cd) {
-    if (cd.solved) {
-        doClear(cd);
-        return;
-    }
-
-    if (!cd.begunInp) {
-        if (cd.func == "")
-            return;
-        else {
-            cd.func = "";
-            display(cd);
-        }
-    }
-    
-    if (cd.secondInp) {
-        if (cd.decimal) {
-            cd.exp--;
-            cd.num2 -= cd.lastInp * std::pow(10, -cd.exp);
-            if (isInteger(cd.num2))
-                cd.decimal = false;
-        }
-        else
-            cd.num2 = (long)(cd.num2 / 10);
-
-        if (cd.num2 == 0)
-            cd.begunInp = false;
-    }
-    else {
-        if (cd.decimal) {
-            cd.exp--;
-            cd.num1 -= cd.lastInp * std::pow(10, -cd.exp);
-            if (isInteger(cd.num1))
-                cd.decimal = false;
-        }
-        else
-            cd.num1 = (long)(cd.num1 / 10);
-        
-        if (cd.num1 == 0)
-            cd.begunInp = false;
-    }
-
-    display(cd);
-}
-
-void doDecimal(CalcData &cd) {
-    cd.decimal = true;
-    cd.begunInp = true;
-    cd.exp = 1;
-    display(cd);
-}
-
-void doFunClick(CalcData &cd, cstr func, bool isTrig) {
-    if (cd.solved)
-        doClear(cd);
-
-    if (cd.begunInp || cd.secondInp)
-        return;
-    
-    cd.func = func;
-    cd.funIsTrig = isTrig;
-    display(cd);
-}
-
-void switchScreen(CalcData &cd, byte switchId, screenVar(0), screenVar(1), screenVar(2), screenVar(3)) {
-    /*
-    * bit - true / false
-    *
-    * Screen (also switch) id:
-    * 
-    * 0 (1s bit) - main / advanced screen
-    * 1 (2s bit) - normal / inversed trig
-    * 
-    * Screen ids:
-    * 
-    * 0 - main screen
-    * 1 - advanced screen
-    * 2 - normal trig screen
-    * 3 - inversed trig screen
-    * 
-    */
-    if (switchId == 0) {
-        // Switch to advanced sreen
-        if (getNthBit(cd.selectedScreen, 0)) {
-            cd.selectedScreen = setNthBit(cd.selectedScreen, 0, 0); // advanced
-            cd.selectedScreen = setNthBit(cd.selectedScreen, 1, 1); // normal trig
-        }
-        // Switch to main screen
-        else
-            cd.selectedScreen = 1; // main
-    }
-    else if (switchId == 1) {
-        // Switch to inversed trig
-        if (getNthBit(cd.selectedScreen, 1))
-            cd.selectedScreen = setNthBit(cd.selectedScreen, 1, 0); // inversed trig
-        // Switch to normal trig
-        else
-            cd.selectedScreen = setNthBit(cd.selectedScreen, 1, 1); // normal trig
-    }
-
-    updateScreens(cd, screen0, screen1, screen2, screen3);
-}
-
-void updateScreens(CalcData &cd, screenVar(0), screenVar(1), screenVar(2), screenVar(3)) {
-    // Main / Advanced screen
-    if (getNthBit(cd.selectedScreen, 0)) {
-        showScreen(0);
-
-        hideScreen(1);
-        hideScreen(2);
-        hideScreen(3);
-        return;
-    }
-    else {
-        showScreen(1);
-        hideScreen(0);
-    }
-    // Normal / Inversed trig
-    if (getNthBit(cd.selectedScreen, 1)) {
-        showScreen(2);
-        hideScreen(3);
-    }
-    else {
-        showScreen(3);
-        hideScreen(2);
-    }
-}
-
-void switchAngleType(CalcData &cd, Button &btnAng) {
-    cd.degrees = !cd.degrees;
-    if (cd.degrees)
-        btnAng.setLabel("deg");
-    else
-        btnAng.setLabel("rad");
-}
-
-void doConstant(CalcData &cd, const double val, cstr disp) {
-    if (cd.begunInp)
-        return;
-    
-    cd.begunInp = true;
-    cd.canInput = false;
-    
-    if (cd.func != "")
-        cd.num1 = val;
-    else {
-        if (cd.secondInp) {
-            cd.num2 = val;
-            cd.con2 = disp;
-        }
-        else {
-            cd.num1 = val;
-            cd.con1 = disp;
-        }
-    }
-    display(cd);
-}
-
-void doOneOver(CalcData &cd) {
-    doOpClick(cd, '/');
-    cd.secondInp = true;
-    cd.begunInp = true;
-    cd.num2 = cd.num1;
-    cd.num1 = 1.0;
-    if (cd.con1 != "") {
-        cd.con2 = cd.con1;
-        cd.con1 = "";
-    }
-    display(cd);
-}
-
-
 int main(int argc, cstr *argv) {
     uint shader, textShader;
     Window window;
@@ -455,7 +64,7 @@ int main(int argc, cstr *argv) {
         true
     };
 
-    std::vector<ref(Button)> buttons;
+    std::vector<Button *> buttons;
 
     screenVar(0);
     screenVar(1);
@@ -533,14 +142,17 @@ int main(int argc, cstr *argv) {
     Text txtRes(dispFont, { -150.0f, 190.0f }, 1.0f, { 0.0f, 0.0f, 0.0f }, textShader, window);
     Text comingSoon(normalBtnFont, { -130.0f, -190.0f }, 0.8f, { 0.0f, 0.0f, 0.0f }, textShader, window);
     comingSoon.setText("Coming soon");
+    comingSoon.setHidden(true);
 
     CalcData cd = {
         txtRes,
-        0.0, 0.0, ' ', "", "", "",
-        false, false, false, false, true, false, true,
-        1, 0,
-        0b00000001
+        { },
+        0, 1,
+        0, 0
     };
+    // DO NOT touch
+    cd.selectedScreen = 0b00000001;
+    updateScreens(cd, screen0, screen1, screen2, screen3);
     
     glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
 
@@ -550,8 +162,8 @@ int main(int argc, cstr *argv) {
         glClear(GL_COLOR_BUFFER_BIT);
 
         // Render sprites
-        for (ref(Button) btn : buttons)
-            btn.get().draw();
+        for (Button *btn : buttons)
+            btn->draw();
 
         txtRes.draw();
         if (!getNthBit(cd.selectedScreen, 0))
@@ -564,67 +176,239 @@ int main(int argc, cstr *argv) {
         onBtnClick(Ang, switchAngleType, cd, btnAng);
 
         // Screen 0
-        onBtnClick(0, doNumClick, cd, 0);
-        onBtnClick(1, doNumClick, cd, 1);
-        onBtnClick(2, doNumClick, cd, 2);
-        onBtnClick(3, doNumClick, cd, 3);
-        onBtnClick(4, doNumClick, cd, 4);
-        onBtnClick(5, doNumClick, cd, 5);
-        onBtnClick(6, doNumClick, cd, 6);
-        onBtnClick(7, doNumClick, cd, 7);
-        onBtnClick(8, doNumClick, cd, 8);
-        onBtnClick(9, doNumClick, cd, 9);
+        onBtnClick(0, updateCalc, cd, "0");
+        onBtnClick(1, updateCalc, cd, "1");
+        onBtnClick(2, updateCalc, cd, "2");
+        onBtnClick(3, updateCalc, cd, "3");
+        onBtnClick(4, updateCalc, cd, "4");
+        onBtnClick(5, updateCalc, cd, "5");
+        onBtnClick(6, updateCalc, cd, "6");
+        onBtnClick(7, updateCalc, cd, "7");
+        onBtnClick(8, updateCalc, cd, "8");
+        onBtnClick(9, updateCalc, cd, "9");
 
-        onBtnClick(Sum, doOpClick, cd, '+');
-        onBtnClick(Sub, doOpClick, cd, '-');
-        onBtnClick(Mul, doOpClick, cd, '*');
-        onBtnClick(Div, doOpClick, cd, '/');
+        onBtnClick(Sum, updateCalc, cd, "op sum");
+        onBtnClick(Sub, updateCalc, cd, "op sub");
+        onBtnClick(Mul, updateCalc, cd, "op mul");
+        onBtnClick(Div, updateCalc, cd, "op div");
 
-        onBtnClick(Res, doSolve, cd);
-        onBtnClick(Com, doDecimal, cd);
-        onBtnClick(Sgn, doSign, cd);
+        onBtnClick(Res, updateCalc, cd, "solve");
+        onBtnClick(Com, updateCalc, cd, "decimal");
+        onBtnClick(Sgn, updateCalc, cd, "sign");
 
-        onBtnClick(Del, doErase, cd);
-        onBtnClick(Clr, doClear, cd);
+        onBtnClick(Del, updateCalc, cd, "erase");
+        onBtnClick(Clr, updateCalc, cd, "clear");
 
         // Screen 1
-        onBtnClick(Pi, doConstant, cd, M_PI, "pi");
-        onBtnClick(Eul, doConstant, cd, M_E, "e");
+        onBtnClick(Pi, updateCalc, cd, "const pi");
+        onBtnClick(Eul, updateCalc, cd, "const e");
 
-        onBtnClick(Sqrt, doFunClick, cd, "sqrt", false);
-        onBtnClick(Cbrt, doFunClick, cd, "cbrt", false);
-        onBtnClick(Lg, doFunClick, cd, "lg", false);
+        onBtnClick(Sqrt, updateCalc, cd, "fun sqrt");
+        onBtnClick(Cbrt, updateCalc, cd, "fun cbrt");
+        onBtnClick(Lg, updateCalc, cd, "fun lg");
 
-        onBtnClick(Pow, doOpClick, cd, '^');
-        onBtnClick(Mod, doOpClick, cd, '%');
-        onBtnClick(Oneover, doOneOver, cd);
+        onBtnClick(Pow, updateCalc, cd, "op pow");
+        onBtnClick(Mod, updateCalc, cd, "op mod");
+        onBtnClick(Oneover, updateCalc, cd, "op oneover");
 
         // Screen 2
-        onBtnClick(Sin, doFunClick, cd, "sin", true);
-        onBtnClick(Cos, doFunClick, cd, "cos", true);
-        onBtnClick(Tan, doFunClick, cd, "tan", true);
-        onBtnClick(Cot, doFunClick, cd, "cot", true);
-        onBtnClick(Sinh, doFunClick, cd, "sinh", true);
-        onBtnClick(Cosh, doFunClick, cd, "cosh", true);
-        onBtnClick(Tanh, doFunClick, cd, "tanh", true);
-        onBtnClick(Coth, doFunClick, cd, "coth", true);
+        onBtnClick(Sin, updateCalc, cd, "fun sin");
+        onBtnClick(Cos, updateCalc, cd, "fun cos");
+        onBtnClick(Tan, updateCalc, cd, "fun tan");
+        onBtnClick(Cot, updateCalc, cd, "fun cot");
+        onBtnClick(Sinh, updateCalc, cd, "fun sinh");
+        onBtnClick(Cosh, updateCalc, cd, "fun cosh");
+        onBtnClick(Tanh, updateCalc, cd, "fun tanh");
+        onBtnClick(Coth, updateCalc, cd, "fun coth");
 
         // Screen 3
-        onBtnClick(Asin, doFunClick, cd, "asin", true);
-        onBtnClick(Acos, doFunClick, cd, "acos", true);
-        onBtnClick(Atan, doFunClick, cd, "atan", true);
-        onBtnClick(Acot, doFunClick, cd, "acot", true);
-        onBtnClick(Asinh, doFunClick, cd, "asinh", true);
-        onBtnClick(Acosh, doFunClick, cd, "acosh", true);
-        onBtnClick(Atanh, doFunClick, cd, "atanh", true);
-        onBtnClick(Acoth, doFunClick, cd, "acoth", true);
+        onBtnClick(Asin, updateCalc, cd, "fun asin");
+        onBtnClick(Acos, updateCalc, cd, "fun acos");
+        onBtnClick(Atan, updateCalc, cd, "fun atan");
+        onBtnClick(Acot, updateCalc, cd, "fun acot");
+        onBtnClick(Asinh, updateCalc, cd, "fun asinh");
+        onBtnClick(Acosh, updateCalc, cd, "fun acosh");
+        onBtnClick(Atanh, updateCalc, cd, "fun atanh");
+        onBtnClick(Acoth, updateCalc, cd, "fun acoth");
 
         glfwSwapBuffers(window.glWin);
         if (glfwGetKey(window.glWin, GLFW_KEY_ESCAPE) == GLFW_PRESS)
             break;
     }
 
+    deleteStack(cd.ast);
     closeOpenGL({ shader, textShader }, window);
 
     return 0;
+}
+
+void switchScreen(CalcData &cd, byte switchId, screenVar(0), screenVar(1), screenVar(2), screenVar(3)) {
+    /*
+    * bit - true / false
+    *
+    * Screen (also switch) id:
+    * 
+    * 0 (1s bit) - main / advanced screen
+    * 1 (2s bit) - normal / inversed trig
+    * 
+    * Screen ids:
+    * 
+    * 0 - main screen
+    * 1 - advanced screen
+    * 2 - normal trig screen
+    * 3 - inversed trig screen
+    * 
+    */
+    if (switchId == 0) {
+        // Switch to advanced sreen
+        if (getNthBit(cd.selectedScreen, 0)) {
+            cd.selectedScreen = setNthBit(cd.selectedScreen, 0, 0); // advanced
+            cd.selectedScreen = setNthBit(cd.selectedScreen, 1, 1); // normal trig
+        }
+        // Switch to main screen
+        else
+            cd.selectedScreen = 1; // main
+    }
+    else if (switchId == 1) {
+        // Switch to inversed trig
+        if (getNthBit(cd.selectedScreen, 1))
+            cd.selectedScreen = setNthBit(cd.selectedScreen, 1, 0); // inversed trig
+        // Switch to normal trig
+        else
+            cd.selectedScreen = setNthBit(cd.selectedScreen, 1, 1); // normal trig
+    }
+
+    updateScreens(cd, screen0, screen1, screen2, screen3);
+}
+
+void updateScreens(CalcData &cd, screenVar(0), screenVar(1), screenVar(2), screenVar(3)) {
+    // Main / Advanced screen
+    if (getNthBit(cd.selectedScreen, 0)) {
+        showScreen(0);
+
+        hideScreen(1);
+        hideScreen(2);
+        hideScreen(3);
+        return;
+    }
+    else {
+        showScreen(1);
+        hideScreen(0);
+    }
+    // Normal / Inversed trig
+    if (getNthBit(cd.selectedScreen, 1)) {
+        showScreen(2);
+        hideScreen(3);
+    }
+    else {
+        showScreen(3);
+        hideScreen(2);
+    }
+}
+
+void switchAngleType(CalcData &cd, Button &btnAng) {
+    cd.degrees = !cd.degrees;
+    if (cd.degrees)
+        btnAng.setLabel("deg");
+    else
+        btnAng.setLabel("rad");
+}
+
+void updateCalc(CalcData &cd, cstr code) {
+    // Clear / erase
+    if (code == "erase") {
+        if (!cd.ast.empty()) {
+            deleteStackTop(cd.ast);
+            if (cd.decimal) {
+                cd.exp--;
+                if (cd.exp == 1)
+                    cd.decimal = false;
+            }
+            updateDisplay(cd);
+        }
+        return;
+    } else if (code == "clear") {
+        deleteStack(cd.ast);
+        cd.decimal = false;
+        updateDisplay(cd);
+        return;
+    }
+    Base_AST *prevAst = (!cd.ast.empty() ? cd.ast.top() : nullptr);
+    // Numbers
+    if (code[1] == '\0' && '0' <= code[0] && code[0] <= '9') {
+        byte num = code[0] - '0';
+        if (prevAst) {
+            if (prevAst->getType() == AST_Type::Unary) {
+                Unary_AST *u_prevAst = (Unary_AST *)prevAst;
+                if (u_prevAst->getInner()->getType() == AST_Type::Value)
+                    addNumToAST_Node((Value_AST *&)u_prevAst->getInner(), num, cd.decimal, cd.exp);
+            } else if (prevAst->getType() == AST_Type::Binary) {
+                Binary_AST *b_prevAst = (Binary_AST *)prevAst;
+                if (b_prevAst->getStyle() == Binary_AST::Style::Function) {
+                    if (b_prevAst->getSecondBegun())
+                        addNumToAST_Node((Value_AST *&)b_prevAst->getSecond(), num, cd.decimal, cd.exp);
+                    else
+                        addNumToAST_Node((Value_AST *&)b_prevAst->getFirst(), num, cd.decimal, cd.exp);
+                } else {
+                    if (!b_prevAst->getSecond() || b_prevAst->getSecond()->getType() == AST_Type::Value)
+                        addNumToAST_Node((Value_AST *&)b_prevAst->getSecond(), num, cd.decimal, cd.exp);
+                }
+            } else if (prevAst->getType() == AST_Type::Value)
+                addNumToAST_Node((Value_AST *&)prevAst, num, cd.decimal, cd.exp);
+        } else
+            addNumToAST_Node((Value_AST *&)prevAst, num, cd.decimal, cd.exp);
+    }
+    // Radix point
+    else if (code == "decimal" && !cd.decimal) {
+        cd.decimal = true;
+        cd.exp = 1;
+    }
+    // Simple operations
+    else if (code[0] == 'o' && code[1] == 'p') {
+        if (code == "op sum")
+            prevAst = new Binary_AST("+", prevAst, nullptr, Binary_AST::Style::Operator);
+        else if (code == "op sub")
+            prevAst = new Binary_AST("-", prevAst, nullptr, Binary_AST::Style::Operator);
+        else if (code == "op mul")
+            prevAst = new Binary_AST("*", prevAst, nullptr, Binary_AST::Style::Operator);
+        else if (code == "op div")
+            prevAst = new Binary_AST("/", prevAst, nullptr, Binary_AST::Style::Operator);
+        ((Binary_AST *)prevAst)->setSecondBegun(true);
+        cd.decimal = false;
+    }
+
+    // Append to history
+    if (prevAst)
+        cd.ast.push(prevAst);
+
+    updateDisplay(cd);
+}
+
+void updateDisplay(CalcData &cd) {
+    if (cd.ast.empty()) {
+        cd.txtRes.setText("");
+        return;
+    }
+    std::stringstream ss;
+    cd.ast.top()->display(ss);
+    cd.txtRes.setText(ss.str());
+}
+
+void addNumToAST_Node(Value_AST *&ast, int num, bool decimal, uint16_t &exp) {
+    if (ast) {
+        double prev = ast->getValue();
+        // delete ast;
+        if (decimal) {
+            ast = new Value_AST(prev + num / pow(10.0, exp));
+            exp++;
+        } else
+            ast = new Value_AST(prev * 10 + num);
+    } else {
+        // delete ast;
+        if (decimal) {
+            ast = new Value_AST(num / 10.0);
+            exp++;
+        } else
+            ast = new Value_AST(num);
+    }
 }

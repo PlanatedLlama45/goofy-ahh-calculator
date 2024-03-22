@@ -24,7 +24,8 @@ public:
 
 private:
     uint VAO, VBO, transformLocation, shader, normalTex, hoverTex, holdTex;
-    bool pressed = false, hidden = false, hoverReact, holdReact, disableOnHide;
+    bool hidden = false, hoverReact, holdReact, disableOnHide;
+    bool pressed = false;
     int reactButton;
 
     void initGeometry(glm::vec2 size);

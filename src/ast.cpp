@@ -8,13 +8,6 @@ Base_AST::Base_AST()
 Base_AST::~Base_AST()
 {}
 
-double Base_AST::getValue() {
-    return 0.0;
-}
-
-void Base_AST::display(std::stringstream &ss)
-{}
-
 double Base_AST::applyFunction(cstr fun, double arg) {
     // Algebra / Calculus
     if (fun == "lg")
@@ -126,8 +119,7 @@ Value_AST::Value_AST(double value) {
     this->value = value;
 }
 
-Value_AST::~Value_AST()
-{}
+Value_AST::~Value_AST() { }
 
 double Value_AST::getValue() {
     return value;
@@ -136,6 +128,11 @@ double Value_AST::getValue() {
 void Value_AST::display(std::stringstream &ss) {
     ss << value;
 }
+
+AST_Type Value_AST::getType() const {
+    return AST_Type::Value;
+}
+
 
 // Const_AST
 
@@ -155,58 +152,114 @@ void Const_AST::display(std::stringstream &ss) {
     ss << text;
 }
 
+AST_Type Const_AST::getType() const {
+    return AST_Type::Const;
+}
+
 
 // Function_AST
 
-Function_AST::Function_AST(cstr function, Base_AST *inner) {
+Unary_AST::Unary_AST(cstr function, Base_AST *inner) {
     this->function = function;
     this->inner = inner;
 }
 
-Function_AST::~Function_AST() {
+Unary_AST::~Unary_AST() {
     delete inner;
 }
 
-double Function_AST::getValue() {
+double Unary_AST::getValue() {
     return Base_AST::applyFunction(function, inner->getValue());
 }
 
-void Function_AST::display(std::stringstream &ss) {
+void Unary_AST::display(std::stringstream &ss) {
     ss << function << '(';
     inner->display(ss);
     ss << ")";
 }
 
+AST_Type Unary_AST::getType() const {
+    return AST_Type::Unary;
+}
+
+Base_AST *&Unary_AST::getInner() {
+    return inner;
+}
+
+void Unary_AST::setInner(Base_AST *ast, bool del) {
+    if (del)
+        delete inner;
+    inner = ast;
+}
 
 // Operator_AST
 
-Operator_AST::Operator_AST(cstr operation, Base_AST *first, Base_AST *second, Style style) {
+Binary_AST::Binary_AST(cstr operation, Base_AST *first, Base_AST *second, Style style) {
     this->operation = operation;
     this->first = first;
     this->second = second;
     this->style = style;
 }
 
-Operator_AST::~Operator_AST() {
+Binary_AST::~Binary_AST() {
     delete first;
     delete second;
 }
 
-double Operator_AST::getValue() {
+double Binary_AST::getValue() {
     return Base_AST::applyFunction(operation, first->getValue(), second->getValue());
 }
 
-void Operator_AST::display(std::stringstream &ss) {
+void Binary_AST::display(std::stringstream &ss) {
     if (style == Style::Function) {
         ss << operation << '(';
-        first->display(ss);
+        if (first)
+            first->display(ss);
         ss << ", ";
-        second->display(ss);
+        if (second)
+            second->display(ss);
         ss << ')';
     } else {
-        first->display(ss);
-        ss << ' ' << operation << ' ';
-        second->display(ss);
+        if (first)
+            first->display(ss);
+        ss << operation;
+        if (second)
+            second->display(ss);
     }
 }
 
+AST_Type Binary_AST::getType() const {
+    return AST_Type::Binary;
+}
+
+Base_AST *&Binary_AST::getFirst() {
+    return first;
+}
+
+Base_AST *&Binary_AST::getSecond() {
+    return second;
+}
+
+void Binary_AST::setFirst(Base_AST *ast, bool del) {
+    if (del)
+        delete first;
+    first = ast;
+}
+
+void Binary_AST::setSecond(Base_AST *ast, bool del) {
+    if (del)
+        delete second;
+    second = ast;
+}
+
+Binary_AST::Style Binary_AST::getStyle() const {
+    return style;
+}
+
+bool Binary_AST::getSecondBegun() const {
+    return secondBegun;
+}
+
+void Binary_AST::setSecondBegun(bool val) {
+    secondBegun = val;
+}

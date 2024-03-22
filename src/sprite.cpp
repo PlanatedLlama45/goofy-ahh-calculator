@@ -57,8 +57,7 @@ bool Sprite::isClicked() {
             pressed = true;
             return true;
         }
-    }
-    else
+    } else
         pressed = false;
     return false;
 }

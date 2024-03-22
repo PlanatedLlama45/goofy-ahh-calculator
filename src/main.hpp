@@ -2,12 +2,13 @@
 #include "maintenance.hpp"
 #include "sprite.hpp"
 #include "text.hpp"
+#include "ast.hpp"
 
 constexpr int maxNum = INT_MAX / 10;
 
 #define makeFont(varName, fontName, size) Font varName; if (varName.load(fontPath(fontName), size)) return -1
 #define addButton(id, btnType, label, offsetX, offsetY, posX, posY) Button btn##id(btnType.normalTex, btnType.doHoverTex, btnType.hoverTex, btnType.doPressTex, btnType.pressedTex, label, \
-    btnType.font, btnType.textColor, { offsetX, offsetY }, btnType.size, { posX, posY }, btnType.window, btnType.shader, btnType.textShader, btnType.reactButton, btnType.disableOnHide); buttons.push_back(btn##id)
+    btnType.font, btnType.textColor, { offsetX, offsetY }, btnType.size, { posX, posY }, btnType.window, btnType.shader, btnType.textShader, btnType.reactButton, btnType.disableOnHide); buttons.push_back(&btn##id)
 
 #define addButtonScreen(screenId, id, btnType, label, offsetX, offsetY, posX, posY) addButton(id, btnType, label, offsetX, offsetY, posX, posY); screen##screenId.push_back(btn##id)
 
@@ -24,24 +25,12 @@ struct CalcData {
 public:
     Text &txtRes;
 
-    double num1;
-    double num2;
-    char op;
-    cstr func;
+    std::stack<Base_AST *> ast;
 
-    cstr con1;
-    cstr con2;
-
-    bool begunInp;
-    bool secondInp;
-    bool solved;
     bool decimal;
     bool degrees;
-    bool funIsTrig;
-    bool canInput;
 
-    int exp;
-    byte lastInp;
+    uint16_t exp;
     byte selectedScreen;
 };
 
@@ -71,20 +60,13 @@ inline bool isInteger(double num) { return num == (double)(int)num; }
 inline bool getNthBit(byte num, uint bit) { return (num >> bit) & 1; }
 inline byte setNthBit(byte num, uint bit, bool val) { return (num & ~(1 << bit)) | (val << bit); }
 
-extern std::string dispNum(CalcData &cd, bool secondNum);
-extern void display(CalcData &cd);
-extern void doNumClick(CalcData &cd, int btn);
-extern void doOpClick(CalcData &cd, char btn);
-extern void doClear(CalcData &cd);
-extern void doSolve(CalcData &cd);
-extern void doSign(CalcData &cd);
-extern void doDecimal(CalcData &cd);
-extern void doErase(CalcData &cd);
-extern void doFunClick(CalcData &cd, cstr func, bool isTrig);
 extern void switchScreen(CalcData &cd, byte switchId, screenVar(0), screenVar(1), screenVar(2), screenVar(3));
 extern void updateScreens(CalcData &cd, screenVar(0), screenVar(1), screenVar(2), screenVar(3));
 extern void switchAngleType(CalcData &cd, Button &btnAng);
-extern void doConstant(CalcData &cd, const double val);
-extern void doOneOver(CalcData &cd);
+
+extern void updateCalc(CalcData &cd, cstr data);
+extern void updateDisplay(CalcData &cd);
+
+extern void addNumToAST_Node(Value_AST *&ast, int num, bool decimal, uint16_t &exp);
 
 extern int main(int argc, cstr *argv);

@@ -96,6 +96,8 @@ std::string Text::getText() const {
 }
 
 void Text::draw() {
+    if (hidden)
+        return;
     // Эту функцию я у пиндосов украл
     glUseProgram(shader);
     glUniform3f(textColorLocation, color.x, color.y, color.z);

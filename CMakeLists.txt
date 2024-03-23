@@ -3,26 +3,30 @@ project(goofy-ahh-calculator VERSION 2.0.0)
 
 find_package(OpenGL REQUIRED)
 
-file (
+file(
     GLOB SOURCES
 
     src/*.c
     src/*.h
     src/*.cpp
     src/*.hpp
+
+    src/*/*.c
+    src/*/*.h
+    src/*/*.cpp
+    src/*/*.hpp
 )
 
 add_executable(goofy-ahh-calculator ${SOURCES})
 
-target_include_directories (
+target_include_directories(
     goofy-ahh-calculator
 
     PRIVATE dependencies
     ${CMAKE_SOURCE_DIR}/../.public-include
-    ${CMAKE_SOURCE_DIR}/../math_parser/src
 )
 
-target_link_libraries (
+target_link_libraries(
     goofy-ahh-calculator
 
     ${CMAKE_SOURCE_DIR}/dependencies/libglfw3.a

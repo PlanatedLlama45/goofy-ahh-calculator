@@ -25,7 +25,7 @@ struct CalcData {
 public:
     Text &txtRes;
 
-    std::stack<Base_AST *> ast;
+    std::stack<std::string> history;
 
     bool decimal;
     bool degrees;
@@ -65,8 +65,5 @@ extern void updateScreens(CalcData &cd, screenVar(0), screenVar(1), screenVar(2)
 extern void switchAngleType(CalcData &cd, Button &btnAng);
 
 extern void updateCalc(CalcData &cd, cstr data);
-extern void updateDisplay(CalcData &cd);
-
-extern void addNumToAST_Node(Value_AST *&ast, int num, bool decimal, uint16_t &exp);
 
 extern int main(int argc, cstr *argv);

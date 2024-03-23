@@ -12,6 +12,8 @@
 #include <ft2build.h>
 #include FT_FREETYPE_H
 
+#include <stb_image.h>
+
 #include <vector>
 #include <unordered_map>
 #include <stack>

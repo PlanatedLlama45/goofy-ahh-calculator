@@ -1,7 +1,7 @@
 #include "config.hpp"
 
 #define STB_IMAGE_IMPLEMENTATION
-#include "stb_image.h"
+#include <stb_image.h>
 
 uint loadTexture(cstr filename, int *width, int *height) {
     int m_width, m_height, channels;

@@ -111,7 +111,14 @@ int main(int argc, cstr *argv) {
     addButtonScreen(0, Clr, normalBtn,  "C",   -20.0f, -20.0f,   -40.0f,   120.0f);
     addButtonScreen(0, Del, normalBtn,  "<",   -15.0f, -20.0f,    40.0f,   120.0f);
 
-    addButton(Scr, normalBtn,  "<=",  -30.0f, -20.0f,   -120.0f,  120.0f);
+    // addButton(Scr, normalBtn,  "<=",  -30.0f, -20.0f,   -120.0f,  120.0f);
+    Sprite btnScr(
+        loadTexture("../img/switch_icon.png"),
+        true, loadTexture("../img/switch_icon_hover.png"),
+        true, loadTexture("../img/switch_icon_pressed.png"),
+        { 80.0f, 80.0f }, { -120.0f, 120.0f}, 0.0f,
+        window, shader
+    );
 
     // Screen 1
     // addButtonScreen(1, Ang, normalBtnMidFont, "deg", -25.0f, -15.0f,   -40.0f,  120.0f);
@@ -180,6 +187,7 @@ int main(int argc, cstr *argv) {
         // Render sprites
         for (Button *btn : buttons)
             btn->draw();
+        btnScr.draw();
 
         txtRes.draw();
         if (!getNthBit(cd.selectedScreen, 0))
@@ -338,6 +346,7 @@ void updateCalc(CalcData &cd, cstr code) {
             ss << MathParser::solveExpression(cd.txtRes.getText());
             cd.txtRes.setText(ss.str());
             cd.history = { };
+            cd.history.push(ss.str());
         } catch (MathParser::Exception &ex) {
             std::cout << ex.what() << std::endl;
             cd.txtRes.setText("Error");

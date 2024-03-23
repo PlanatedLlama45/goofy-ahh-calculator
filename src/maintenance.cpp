@@ -79,6 +79,11 @@ bool init(int width, int height, cstr title, bool windowResizeable, Window &wind
 
 	glfwSetWindowAttrib(win, GLFW_RESIZABLE, GL_FALSE);
     glfwMakeContextCurrent(win);
+
+	GLFWimage icon;
+	icon.pixels = stbi_load("../icon.png", &icon.width, &icon.height, 0, 4);
+	glfwSetWindowIcon(win, 1, &icon); 
+	stbi_image_free(icon.pixels);
 	
     window.glWin = win;
 

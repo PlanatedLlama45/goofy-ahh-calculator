@@ -20,7 +20,7 @@
 #include <sstream>
 #include <string>
 
-#include <memory>
+#include "math_parser/math_parser.hpp"
 
 #define ref(type) std::reference_wrapper<type>
 
@@ -49,6 +49,19 @@ extern inline void deleteStack(std::stack<T *> &st) {
         delete st.top();
         st.pop();
     }
+}
+
+template <class T>
+extern inline T tryGetTop(std::stack<T> &st, T err) {
+    if (st.empty())
+        return err;
+    return st.top();
+}
+
+extern inline std::string tryGetTop(std::stack<std::string> &st, std::string err) {
+    if (st.empty())
+        return err;
+    return st.top();
 }
 
 inline double deg2rad(double deg) { return deg * M_PI / 180.0; }

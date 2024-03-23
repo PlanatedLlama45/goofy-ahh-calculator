@@ -64,6 +64,21 @@ int main(int argc, cstr *argv) {
         true
     };
 
+    ButtonType smallBtnVert = {
+        loadTexture(texPath("small_button_vert.png")),
+        true,
+        loadTexture(texPath("small_button_vert_hover.png")),
+        true,
+        loadTexture(texPath("small_button_vert_pressed.png")),
+        normalBtnFont,
+        { 0.0f, 0.0f, 0.0f },
+        { 40.0f, 80.0f },
+        window,
+        shader, textShader,
+        GLFW_MOUSE_BUTTON_LEFT,
+        true
+    };
+
     std::vector<Button *> buttons;
 
     screenVar(0);
@@ -89,8 +104,9 @@ int main(int argc, cstr *argv) {
     addButtonScreen(0, Div, normalBtn,  "/",   -7.5f,  -20.0f,    120.0f,  120.0f);
 
     addButtonScreen(0, Res, normalBtn,  "=",   -15.0f, -20.0f,    120.0f, -200.0f);
-    addButtonScreen(0, Com, normalBtn,  ",",   -10.0f, -20.0f,    40.0f,  -200.0f);
-    addButtonScreen(0, Sgn, normalBtn,  "+/-", -35.0f, -20.0f,   -120.0f, -200.0f);
+    addButtonScreen(0, Radix, normalBtn,  ".",   -10.0f, -20.0f,    40.0f,  -200.0f);
+    addButtonScreen(0, BracketL, smallBtnVert,  "(", -10.0f, -15.0f,   -140.0f, -200.0f);
+    addButtonScreen(0, BracketR, smallBtnVert,  ")", -10.0f, -15.0f,   -100.0f, -200.0f);
 
     addButtonScreen(0, Clr, normalBtn,  "C",   -20.0f, -20.0f,   -40.0f,   120.0f);
     addButtonScreen(0, Del, normalBtn,  "<",   -15.0f, -20.0f,    40.0f,   120.0f);
@@ -98,7 +114,7 @@ int main(int argc, cstr *argv) {
     addButton(Scr, normalBtn,  "<=",  -30.0f, -20.0f,   -120.0f,  120.0f);
 
     // Screen 1
-    addButtonScreen(1, Ang, normalBtnMidFont, "deg", -25.0f, -15.0f,   -40.0f,  120.0f);
+    // addButtonScreen(1, Ang, normalBtnMidFont, "deg", -25.0f, -15.0f,   -40.0f,  120.0f);
 
     addButtonScreen(1, Inv, normalBtnMidFont, "inv", -20.0f, -15.0f,    120.0f,  120.0f);
     addButtonScreen(1, Pi,  normalBtnMidFont, "pi",  -12.5f, -15.0f,    40.0f,  120.0f);
@@ -173,7 +189,7 @@ int main(int argc, cstr *argv) {
         // Screen switches
         onBtnClick(Scr, switchScreen, cd, 0, screen0, screen1, screen2, screen3);
         onBtnClick(Inv, switchScreen, cd, 1, screen0, screen1, screen2, screen3);
-        onBtnClick(Ang, switchAngleType, cd, btnAng);
+        // onBtnClick(Ang, switchAngleType, cd, btnAng);
 
         // Screen 0
         onBtnClick(0, updateCalc, cd, "0");
@@ -187,56 +203,56 @@ int main(int argc, cstr *argv) {
         onBtnClick(8, updateCalc, cd, "8");
         onBtnClick(9, updateCalc, cd, "9");
 
-        onBtnClick(Sum, updateCalc, cd, "op sum");
-        onBtnClick(Sub, updateCalc, cd, "op sub");
-        onBtnClick(Mul, updateCalc, cd, "op mul");
-        onBtnClick(Div, updateCalc, cd, "op div");
+        onBtnClick(Sum, updateCalc, cd, "+");
+        onBtnClick(Sub, updateCalc, cd, "-");
+        onBtnClick(Mul, updateCalc, cd, "*");
+        onBtnClick(Div, updateCalc, cd, "/");
 
         onBtnClick(Res, updateCalc, cd, "solve");
-        onBtnClick(Com, updateCalc, cd, "decimal");
-        onBtnClick(Sgn, updateCalc, cd, "sign");
+        onBtnClick(Radix, updateCalc, cd, ".");
+        onBtnClick(BracketL, updateCalc, cd, "(");
+        onBtnClick(BracketR, updateCalc, cd, ")");
 
         onBtnClick(Del, updateCalc, cd, "erase");
         onBtnClick(Clr, updateCalc, cd, "clear");
 
         // Screen 1
-        onBtnClick(Pi, updateCalc, cd, "const pi");
-        onBtnClick(Eul, updateCalc, cd, "const e");
+        onBtnClick(Pi, updateCalc, cd, "pi");
+        onBtnClick(Eul, updateCalc, cd, "e");
 
-        onBtnClick(Sqrt, updateCalc, cd, "fun sqrt");
-        onBtnClick(Cbrt, updateCalc, cd, "fun cbrt");
-        onBtnClick(Lg, updateCalc, cd, "fun lg");
+        onBtnClick(Sqrt, updateCalc, cd, "sqrt(");
+        onBtnClick(Cbrt, updateCalc, cd, "cbrt(");
+        onBtnClick(Lg, updateCalc, cd, "lg(");
 
-        onBtnClick(Pow, updateCalc, cd, "op pow");
-        onBtnClick(Mod, updateCalc, cd, "op mod");
-        onBtnClick(Oneover, updateCalc, cd, "op oneover");
+        onBtnClick(Pow, updateCalc, cd, "^");
+        onBtnClick(Mod, updateCalc, cd, "%");
+        onBtnClick(Oneover, updateCalc, cd, "^-1");
 
         // Screen 2
-        onBtnClick(Sin, updateCalc, cd, "fun sin");
-        onBtnClick(Cos, updateCalc, cd, "fun cos");
-        onBtnClick(Tan, updateCalc, cd, "fun tan");
-        onBtnClick(Cot, updateCalc, cd, "fun cot");
-        onBtnClick(Sinh, updateCalc, cd, "fun sinh");
-        onBtnClick(Cosh, updateCalc, cd, "fun cosh");
-        onBtnClick(Tanh, updateCalc, cd, "fun tanh");
-        onBtnClick(Coth, updateCalc, cd, "fun coth");
+        onBtnClick(Sin, updateCalc, cd, "sin(");
+        onBtnClick(Cos, updateCalc, cd, "cos(");
+        onBtnClick(Tan, updateCalc, cd, "tan(");
+        onBtnClick(Cot, updateCalc, cd, "cot(");
+        onBtnClick(Sinh, updateCalc, cd, "sinh(");
+        onBtnClick(Cosh, updateCalc, cd, "cosh(");
+        onBtnClick(Tanh, updateCalc, cd, "tanh(");
+        onBtnClick(Coth, updateCalc, cd, "coth(");
 
         // Screen 3
-        onBtnClick(Asin, updateCalc, cd, "fun asin");
-        onBtnClick(Acos, updateCalc, cd, "fun acos");
-        onBtnClick(Atan, updateCalc, cd, "fun atan");
-        onBtnClick(Acot, updateCalc, cd, "fun acot");
-        onBtnClick(Asinh, updateCalc, cd, "fun asinh");
-        onBtnClick(Acosh, updateCalc, cd, "fun acosh");
-        onBtnClick(Atanh, updateCalc, cd, "fun atanh");
-        onBtnClick(Acoth, updateCalc, cd, "fun acoth");
+        onBtnClick(Asin, updateCalc, cd, "asin(");
+        onBtnClick(Acos, updateCalc, cd, "acos(");
+        onBtnClick(Atan, updateCalc, cd, "atan(");
+        onBtnClick(Acot, updateCalc, cd, "acot(");
+        onBtnClick(Asinh, updateCalc, cd, "asinh(");
+        onBtnClick(Acosh, updateCalc, cd, "acosh(");
+        onBtnClick(Atanh, updateCalc, cd, "atanh(");
+        onBtnClick(Acoth, updateCalc, cd, "acoth(");
 
         glfwSwapBuffers(window.glWin);
         if (glfwGetKey(window.glWin, GLFW_KEY_ESCAPE) == GLFW_PRESS)
             break;
     }
 
-    deleteStack(cd.ast);
     closeOpenGL({ shader, textShader }, window);
 
     return 0;
@@ -315,100 +331,34 @@ void switchAngleType(CalcData &cd, Button &btnAng) {
 }
 
 void updateCalc(CalcData &cd, cstr code) {
-    // Clear / erase
-    if (code == "erase") {
-        if (!cd.ast.empty()) {
-            deleteStackTop(cd.ast);
-            if (cd.decimal) {
-                cd.exp--;
-                if (cd.exp == 1)
-                    cd.decimal = false;
-            }
-            updateDisplay(cd);
+    // Solve
+    if (code == "solve") {
+        try {
+            std::stringstream ss;
+            ss << MathParser::solveExpression(cd.txtRes.getText());
+            cd.txtRes.setText(ss.str());
+            cd.history = { };
+        } catch (MathParser::Exception &ex) {
+            std::cout << ex.what() << std::endl;
+            cd.txtRes.setText("Error");
         }
         return;
-    } else if (code == "clear") {
-        deleteStack(cd.ast);
-        cd.decimal = false;
-        updateDisplay(cd);
+    }
+    // Erase / clear
+    if (code == "erase") {
+        if (!cd.history.empty())
+            cd.history.pop();
+        cd.txtRes.setText(tryGetTop(cd.history, ""));
         return;
-    }
-    Base_AST *prevAst = (!cd.ast.empty() ? cd.ast.top() : nullptr);
-    // Numbers
-    if (code[1] == '\0' && '0' <= code[0] && code[0] <= '9') {
-        byte num = code[0] - '0';
-        if (prevAst) {
-            if (prevAst->getType() == AST_Type::Unary) {
-                Unary_AST *u_prevAst = (Unary_AST *)prevAst;
-                if (u_prevAst->getInner()->getType() == AST_Type::Value)
-                    addNumToAST_Node((Value_AST *&)u_prevAst->getInner(), num, cd.decimal, cd.exp);
-            } else if (prevAst->getType() == AST_Type::Binary) {
-                Binary_AST *b_prevAst = (Binary_AST *)prevAst;
-                if (b_prevAst->getStyle() == Binary_AST::Style::Function) {
-                    if (b_prevAst->getSecondBegun())
-                        addNumToAST_Node((Value_AST *&)b_prevAst->getSecond(), num, cd.decimal, cd.exp);
-                    else
-                        addNumToAST_Node((Value_AST *&)b_prevAst->getFirst(), num, cd.decimal, cd.exp);
-                } else {
-                    if (!b_prevAst->getSecond() || b_prevAst->getSecond()->getType() == AST_Type::Value)
-                        addNumToAST_Node((Value_AST *&)b_prevAst->getSecond(), num, cd.decimal, cd.exp);
-                }
-            } else if (prevAst->getType() == AST_Type::Value)
-                addNumToAST_Node((Value_AST *&)prevAst, num, cd.decimal, cd.exp);
-        } else
-            addNumToAST_Node((Value_AST *&)prevAst, num, cd.decimal, cd.exp);
-    }
-    // Radix point
-    else if (code == "decimal" && !cd.decimal) {
-        cd.decimal = true;
-        cd.exp = 1;
-    }
-    // Simple operations
-    else if (code[0] == 'o' && code[1] == 'p') {
-        if (code == "op sum")
-            prevAst = new Binary_AST("+", prevAst, nullptr, Binary_AST::Style::Operator);
-        else if (code == "op sub")
-            prevAst = new Binary_AST("-", prevAst, nullptr, Binary_AST::Style::Operator);
-        else if (code == "op mul")
-            prevAst = new Binary_AST("*", prevAst, nullptr, Binary_AST::Style::Operator);
-        else if (code == "op div")
-            prevAst = new Binary_AST("/", prevAst, nullptr, Binary_AST::Style::Operator);
-        ((Binary_AST *)prevAst)->setSecondBegun(true);
-        cd.decimal = false;
-    }
-
-    // Append to history
-    if (prevAst)
-        cd.ast.push(prevAst);
-
-    updateDisplay(cd);
-}
-
-void updateDisplay(CalcData &cd) {
-    if (cd.ast.empty()) {
+    } else if (code == "clear") {
+        cd.history = { };
         cd.txtRes.setText("");
         return;
     }
-    std::stringstream ss;
-    cd.ast.top()->display(ss);
-    cd.txtRes.setText(ss.str());
-}
 
-void addNumToAST_Node(Value_AST *&ast, int num, bool decimal, uint16_t &exp) {
-    if (ast) {
-        double prev = ast->getValue();
-        // delete ast;
-        if (decimal) {
-            ast = new Value_AST(prev + num / pow(10.0, exp));
-            exp++;
-        } else
-            ast = new Value_AST(prev * 10 + num);
-    } else {
-        // delete ast;
-        if (decimal) {
-            ast = new Value_AST(num / 10.0);
-            exp++;
-        } else
-            ast = new Value_AST(num);
-    }
-}
+    std::string prevText = tryGetTop(cd.history, "");
+    prevText += code;
+
+    cd.txtRes.setText(prevText);
+    cd.history.push(prevText);
+}    

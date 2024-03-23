@@ -91,7 +91,7 @@ void Text::setText(std::string str) {
     text = str;
 }
 
-std::string Text::getText() const {
+const std::string &Text::getText() const {
     return text;
 }
 

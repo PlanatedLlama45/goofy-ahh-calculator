@@ -30,7 +30,7 @@ public:
     ~Text();
 
     void setText(std::string str);
-    std::string getText() const;
+    const std::string &getText() const;
     void draw();
     inline void setHidden(bool val) { hidden = val; }
     inline void switchHidden() { hidden = !hidden; }

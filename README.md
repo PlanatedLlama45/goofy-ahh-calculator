@@ -7,4 +7,4 @@
 - GLM
 - stb_image.h
 
-## ../math_parser can be found at https://github.com/PlanatedLlama45/math_parser
+## more information about math_parser can be found at https://github.com/PlanatedLlama45/math_parser

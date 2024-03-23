@@ -1,6 +1,5 @@
 #pragma once
 
-#include <iostream>
 // Opengl v4.6
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>

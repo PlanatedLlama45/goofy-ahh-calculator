@@ -5,7 +5,7 @@ int main(int argc, cstr *argv) {
     Window window;
 
     if (init(
-            324, 484, "Goofy ahh calculator", false, window
+            324, 484, "Goofy Ahh Calculator", false, window
         )) return -1;
     
     shader = makeShader(shaderPath("main.vert"), shaderPath("main.frag"));
@@ -348,7 +348,7 @@ void updateCalc(CalcData &cd, cstr code) {
             cd.history = { };
             cd.history.push(ss.str());
         } catch (MathParser::Exception &ex) {
-            std::cout << ex.what() << std::endl;
+            // std::cout << ex.what() << std::endl;
             cd.txtRes.setText("Error");
         }
         return;
